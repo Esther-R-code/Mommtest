@@ -1,6 +1,6 @@
-#' the probability of the counterfactual outcome of Y
+#' the probability of the counterfactual outcome of the outcome
 #'
-#' This function allows you to calculate the probability of the counterfactual outcome of Y.
+#' This function allows you to calculate the probability of the counterfactual outcome of the outcome.
 #' before use this function, plase makesure the R packages "ordinal" and "parallel" have been install and library.
 #' @title rho
 #' @param TH theta; all of the parameters of the model #list(beta.hat, alpha.hat, delta.hat)
@@ -8,18 +8,18 @@
 #' @param Name names of exposure and mediators, def:c("W","Q","S")
 #' @param a the value of outcome
 #' @param w the values of intervention
-#' @param confounders the values of confounder, def:NULL
+#' @param confounders the values of confounders, def:NULL
 #' @export rho
 #' @keywords counterfactual
-#' @examples 
+#' @examples
 #' deltaq<-c(0.1,0.5) #Q c(d0,dw)
-#' alphas<-c(0.2,0.5,0.5) #S c(al0,alw,alq) 
-#' 
+#' alphas<-c(0.2,0.5,0.5) #S c(al0,alw,alq)
+#'
 #' betay1<-c(-1.8, 1.0, 1.2, 1.3) #c(b01,bw1,bq1,bs1)
-#' betay2<-c(0.8, 0.8, 1.1, 1.2) #c(b02,bw2,bq2,bs2) 
+#' betay2<-c(0.8, 0.8, 1.1, 1.2) #c(b02,bw2,bq2,bs2)
 #' betay<-rbind(betay1,betay2)
 #' Tbeta<- NULL
-#' for(beta.count in 1:4){Tbeta<-c(Tbeta,betay[,beta.count])} 
+#' for(beta.count in 1:4){Tbeta<-c(Tbeta,betay[,beta.count])}
 #' Ttheta<- list(Tbeta, alphas, deltaq)
 #' TH= Ttheta
 #' SH= c(0.23,0.23)
@@ -27,7 +27,7 @@
 #' a= 2
 #' w0000 <- c(0, 0, 0, 0)
 #' confounders<- c()
-#' 
+#'
 #' rho(TH, SH, Name=c("W","Q","S"), n_cate1, a, w0000, confounders)
 
 rho<-function(TH,SH,Name=c("W","Q","S"),n_cate1,a,w,confounders=NULL){
