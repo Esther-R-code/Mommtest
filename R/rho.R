@@ -1,7 +1,7 @@
 #' the probability of the counterfactual outcome of the outcome
 #'
 #' This function allows you to calculate the probability of the counterfactual outcome of the outcome.
-#' before use this function, plase makesure the R packages "ordinal" and "parallel" have been install and library.
+#' Before using this function, please make sure the R packages "ordinal" and "parallel" have been install and libraries.
 #' @title rho
 #' @param TH theta; all of the parameters of the model #list(beta.hat, alpha.hat, delta.hat)
 #' @param SH sigma: all of the estimates of the variance of the mediators

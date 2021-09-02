@@ -20,12 +20,12 @@
 #'n_cate<- 3
 #'deltaq<- c(0.1,0.5) #Q c(d0,dw)
 #'alphas<- c(0.2,0.5,0.5) #S c(al0,alw,alq)
-#'betay1<- c(-1.8, 1.0, 1.2, 1.3) #c(b01,bw1,bq1,bs1)
-#'betay2<- c(0.8, 0.8, 1.1, 1.2) #c(b02,bw2,bq2,bs2)
+#'betay1<- c(-1.8, 1.0, 1.2, 1.3, 0.05) #c(b01,bw1,bq1,bs1,bc1)
+#'betay2<- c(0.8, 0.8, 1.1, 1.2, 0.03) #c(b02,bw2,bq2,bs2,bc2)
 #'betay<- rbind(betay1,betay2)
-#'coa<- c()
-#'j<-56 #sample(1,1:1e+09)
-#'sim_cover<-lapply(j,"sim_medi_cate_data",sample_size=sample_size,exp_cont=exp_cont,med_cont=med_cont,n_cate=n_cate,deltaq=deltaq,alphas=alphas,betay=betay,coa=coa)
+#'coa<- c(0,0.4)
+#'j<- 56 #sample(1,1:1e+09)
+#'sim_cover<- sim_medi_cate_data(sample_size=sample_size,exp_cont=exp_cont,med_cont=med_cont,n_cate=n_cate,deltaq=deltaq,alphas=alphas,betay=betay,coa=coa,j)
 #'@return Y the outcome
 #'@return W the exposure
 #'@return Q the 1st mediator
@@ -39,20 +39,20 @@ sim_medi_cate_data=function(sample_size, exp_cont, med_cont, n_cate, deltaq, alp
       W<- rnorm(sample_size,mean=exp_cont[1],sd=exp_cont[2])
       Q<- deltaq[1]+deltaq[2]*W+rnorm(sample_size,mean=0,med_cont[1])
       S<- alphas[1]+alphas[2]*W+alphas[3]*Q+rnorm(sample_size,mean=0,med_cont[2])
-      X.matrix<- cbind(rep(1,sample_size),W,Q,S)
+      X.matrix<- cbind(rep(1,sample_size), W, Q, S)
     }else{
       n_coa<- length(coa)/2
       Coa<- NULL
       Coa_name<- NULL
       for(count_coa in 1:n_coa){
         Coa<-cbind(Coa,rnorm(sample_size,mean=coa[(1+(n_coa-1)*2)],sd=coa[(2+(n_coa-1)*2)]))
-        Coa_name<- c(Coa_name,paste0("Coa",count_coa))
+        Coa_name<- c(Coa_name,paste0("Coa", count_coa))
         }
       colnames(Coa)<-Coa_name
-      W<- rnorm(sample_size,mean=exp_cont[1],sd=exp_cont[2])
-      Q<- deltaq[1]+deltaq[2]*W+rowSums(t(t(Coa)*deltaq[-(1:2)]))+rnorm(sample_size,mean=0,med_cont[1])
-      S<- alphas[1]+alphas[2]*W+alphas[3]*Q+rowSums(t(t(Coa)*alphas[-(1:3)]))+rnorm(sample_size,mean=0,med_cont[2])
-      X.matrix<- cbind(rep(1,sample_size),W,Q,S,Coa)
+      W<- rnorm(sample_size, mean=exp_cont[1], sd=exp_cont[2])
+      Q<- deltaq[1]+deltaq[2]*W+rowSums(t(t(Coa)*deltaq[-(1:2)]))+rnorm(sample_size, mean=0, med_cont[1])
+      S<- alphas[1]+alphas[2]*W+alphas[3]*Q+rowSums(t(t(Coa)*alphas[-(1:3)]))+rnorm(sample_size, mean=0, med_cont[2])
+      X.matrix<- cbind(rep(1,sample_size), W, Q, S, Coa)
     }
 
     eta<- X.matrix%*%t(betay)

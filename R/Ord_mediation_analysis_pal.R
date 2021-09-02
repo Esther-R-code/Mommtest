@@ -1,46 +1,49 @@
 #' Apply mediation analysis for non-rare orinal/multinomial outcome with two gaussian mediators
 #' @title Ord_mediation_analysis
-#' multinomial outcome mediation analysis with two ordered mediators
+#' multinomial outcome mediation analysis with two ordered mediators.
+#' Before using this function, please make sure the R packages "ordinal" and "parallel" have been install and libraries.
 #' @param Indata: Input data with outcome, exposure, mediators, and covariates as columns. The number of rows equals to the number of people in the data you used.
 #' @param n_cate: the number of categories of the outcome
 #' @param confounders: the values of confounder
 #' @param intv: number of interventions. Default is 4 and only 4.
 #' @param intval: the values of exposure used for intervention. Default is c(0,1).
 #' @param nb: Number of bootstrapping. Default is 0 (i.e. no bootstrapping applied).
-#' @param n_core: number of cores that will be used
+#' @param n_core: number of cores that will be used in parallel computing. default=1
 #' @export Ord_mediation_analysis_pal
-#' @example
+#' @examples
 #' library(ordinal)
 #' library(parallel)
-#' simluate a data set
+#' #simluate a data set
 #' sample_size<- 500
 #' exp_cont<- c(0,1)
 #' med_cont<- c(0.23,0.23)
 #' n_cate<- 3
 #' deltaq<- c(0.1,0.5) #Q c(d0,dw)
 #' alphas<- c(0.2,0.5,0.5) #S c(al0,alw,alq)
-#' betay1<- c(-1.8, 1.0, 1.2, 1.3) #c(b01,bw1,bq1,bs1)
-#' betay2<- c(0.8, 0.8, 1.1, 1.2) #c(b02,bw2,bq2,bs2)
+#' betay1<- c(-1.8, 1.0, 1.2, 1.3, 0.05) #c(b01,bw1,bq1,bs1,bc1)
+#' betay2<- c(0.8, 0.8, 1.1, 1.2, 0.03) #c(b02,bw2,bq2,bs2,bc2)
 #' betay<- rbind(betay1,betay2)
 #' coa<- c(0,0.4)
-#' j<-56 #sample(1,1:1e+09)
-#' sim_data<-lapply(j,"sim_medi_cate_data",sample_size=sample_size,exp_cont=exp_cont,med_cont=med_cont,n_cate=n_cate,deltaq=deltaq,alphas=alphas,betay=betay,coa=coa)
-#' seeting of mutiple mediation analysis
-#' confounders<- median(sim_data[[1]][,5])
+#' j<- 56 #sample(1,1:1e+09)
+#' sim_data<- sim_medi_cate_data(sample_size=sample_size, exp_cont=exp_cont, med_cont=med_cont, n_cate=n_cate, deltaq=deltaq, alphas=alphas, betay=betay, coa=coa,j)
+#' #seeting of mutiple mediation analysis
+#' confounders<- median(sim_data[,5])
 #' intv<- 4
 #' intval<- c(0, 1)
 #' nb<- 0
-#' n_core<- 8
-#' result<- Ord_mediation_analysis_pal(Indata=sim_data[[1]], n_cate, confounders, intv, intval, nb, n_core)
+#' n_core<- 2
+#' result<- Ord_mediation_analysis_pal(Indata=sim_data, n_cate, confounders, intv, intval, nb, n_core)
+#'
+#' #if want to calculate the confidence interval by using bootstrapping
+#' nb<- 50
+#' result_boot<- Ord_mediation_analysis_pal(Indata=sim_data, n_cate, confounders, intv, intval, nb, n_core)
 
-Ord_mediation_analysis_pal=function(Indata, n_cate, confounders, intv=4, intval=c(0,1), nb=0, n_core){
-  #dt=as.data.frame(Indata)
+Ord_mediation_analysis_pal=function(Indata, n_cate, confounders, intv=4, intval=c(0,1), nb=0, n_core=1){
   colnames(Indata)[1:4]<-c("Y","W","Q","S")
-  #n_para<-dim(Indata)[2]
-  #n_cate<-length(names(summary(Indata$Y)))
+  if(n_cate!=length(names(summary(Indata$Y)))){stop("please make sure 'n_cate' is equal to the number of categories of the outcome!")}
   n_cate1<-n_cate-1
-  n.coa<-length(confounders)
-  n_para<-4+n.coa
+  n_para<-4+length(confounders)
+  if(n_para!=dim(Indata)[2]){stop("please make sure the length of 'confounders' equal to the number of covariates of the model of outcome!")}
 
   Para<-"~W+Q+S"
   ParaTE<-"~W"
@@ -77,20 +80,20 @@ Ord_mediation_analysis_pal=function(Indata, n_cate, confounders, intv=4, intval=
   if(nb>0){
     nb_r<- nb*1.2
     RNGkind("L'Ecuyer-CMRG")
-    data.boot<-mclapply(1:nb_r, "create_data_boot_one", Indata=Indata, j=j, mc.cores=n_core)
+    databoot<- mclapply(1:nb_r, "create_data_boot_one", Indata=Indata, mc.cores=n_core, mc.cleanup = TRUE)
   }
 
   ####fixed###########################################
   if(nb>0){
     for(cate.count in 1:(n_cate)){
       # for each Y=a=cate.count calculate the PSEs
-      PSE_a<-PSEa_wiboot_c(data.boot, Para=Para, n_para=n_para, n_cate=n_cate, ITE=ITE, theta.hat=theta.hat, sig.hat=sig.hat, Vcov.matrix=Vcov.matrix, intv=intv, intval=intval, confounders=confounders, a=cate.count, nb=nb, n_core=n_core)
+      PSE_a<-PSEa_wiboot_c(data_boot=databoot, Para=Para, n_para=n_para, n_cate=n_cate, ITE=ITE, theta.hat=theta.hat, sig.hat=sig.hat, Vcov.matrix=Vcov.matrix, intv=intv, intval=intval, confounders=confounders, a=cate.count, nb=nb, n_core=n_core)
       PSE<-cbind(PSE,PSE_a)#;print(PSE)
       coln_PSE<-c(coln_PSE,paste0("Outcome=",cate.count))#;print(coln_PSE)
     }
   }else{
    for(cate.count in 1:(n_cate)){
-   	PSE_a<-PSEa_woboot(Indata, Para=Para, n_para=n_para, n_cate=n_cate, ITE=ITE, theta.hat=theta.hat, sig.hat=sig.hat, Vcov.matrix=Vcov.matrix, intv=intv, intval=intval, confounders=confounders, a=cate.count, n_core=n_core)
+   	PSE_a<-PSEa_woboot(Indata, Para=Para, n_para=n_para, n_cate=n_cate, ITE=ITE, theta.hat=theta.hat, sig.hat=sig.hat, Vcov.matrix=Vcov.matrix, intv=intv, intval=intval, confounders=confounders, a=cate.count)
   	PSE<-cbind(PSE,PSE_a)#;print(PSE)
   	coln_PSE<-c(coln_PSE,paste0("Outcome=",cate.count))#;print(coln_PSE)
   	}

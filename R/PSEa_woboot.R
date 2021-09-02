@@ -11,9 +11,9 @@
 #' @param intval the values of exposure used for intervention. Default is c(0,1)
 #' @param confounders the values of confounders, def:c()
 #' @param a the value of outcome
-#' @param n_core: number of cores that will be used
 #' @export PSEa_woboot
-PSEa_woboot=function(data_boot, Para, n_para, n_cate, ITE, theta.hat, sig.hat, Vcov.matrix, intv, intval, confounders, a, n_core){
+
+PSEa_woboot=function(data_boot, Para, n_para, n_cate, ITE, theta.hat, sig.hat, Vcov.matrix, intv, intval, confounders, a){
   n_cate1=n_cate-1
   TEa<-NULL
   TEa1<-NULL

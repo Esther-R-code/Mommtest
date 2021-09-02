@@ -1,8 +1,8 @@
 #' @title PSE with bootstrap
-#' @param data.boot the data set
+#' @param data_boot the data set
 #' @param Para the parameter that will trated as nominal variables. Seeting as "~W+Q+S". The detail please see the R function 'clm'
 #' @param n_para the number of pararmeters that used in the model of outcome
-#' @param n.cata the number of categories of the outcome
+#' @param n_cate the number of categories of the outcome
 #' @param ITE the total effect
 #' @param theta.hat the estimate of theta (all of the parameters of the models)
 #' @param sig.hat the eastimate of sigma (all of the variance of the parameters)
@@ -12,17 +12,17 @@
 #' @param confounders the values of confounders, def:c()
 #' @param a the value of outcome
 #' @param nb: number of bootstrapping
-#' @param n.core: number of cores that will be used
+#' @param n_core: number of cores that will be used
 #'
 #' @export PSEa_wiboot_c
 #'
-PSEa_wiboot_c=function(data_boot, Para, n.para, n.cate, ITE, theta.hat, sig.hat, Vcov.matrix, intv, intval, confounders, a, nb, n.core){
-  n.cate1=n.cate-1
+PSEa_wiboot_c=function(data_boot, Para, n_para, n_cate, ITE, theta.hat, sig.hat, Vcov.matrix, intv, intval, confounders, a, nb, n_core){
+  n_cate1=n_cate-1
   TEa<-NULL
   TEa1<-NULL
-  for(con.count in 1:(n.para-2))
-  {TEa<-c(TEa,ITE[(con.count-1)*(n.cate)+(a+1)])
-  TEa1<-c(TEa1,ITE[(con.count-1)*(n.cate)+(a)])}
+  for(con_count in 1:(n_para-2))
+  {TEa<-c(TEa,ITE[(con_count-1)*(n_cate)+(a+1)])
+  TEa1<-c(TEa1,ITE[(con_count-1)*(n_cate)+(a)])}
 
   rTEa<-total_a_r(TEa,TEa1,intval,confounders)
 
@@ -32,28 +32,28 @@ PSEa_wiboot_c=function(data_boot, Para, n.para, n.cate, ITE, theta.hat, sig.hat,
   ###########################################
   repeat{
     RNGkind("L'Ecuyer-CMRG")
-    create_boot_risk<-mclapply(data_boot,"create_boot_risk_one", confounders=confounders, Para=Para, n.cate=n.cate, a=a, intv=intv, intval=intval,mc.cores=n.core)
-    #create_boot_risk<-lapply(data_boot,"create_boot_risk_one", confounders=confounders, Para=Para, n.cate=n.cate, a=a, intv=intv, intval=intval)
+    create_boot_risk<- mclapply(data_boot, "create_boot_risk_one", confounders=confounders, Para=Para, n_cate=n_cate, a=a, intv=intv, intval=intval, mc.cores=n_core, mc.cleanup = TRUE)
+    #create_boot_risk<-lapply(data_boot,"create_boot_risk_one", confounders=confounders, Para=Para, n_cate=n_cate, a=a, intv=intv, intval=intval)
 
-    nb_r<-nb*1.2
-    risk.boot<-matrix(unlist(create_boot_risk),nrow=nb_r,byrow=T)
+    nb_r<- nb*1.2
+    risk.boot<- matrix(unlist(create_boot_risk),nrow=nb_r,byrow=T)
     #print("dim of risk.boot=")
     #print(dim(risk.boot))
     if(any(risk.boot=="NaN")){
-      ind<-which(risk.boot[,1]=="NaN"|risk.boot[,2]=="NaN"|risk.boot[,3]=="NaN"|risk.boot[,4]=="NaN"|risk.boot[,5]=="NaN"|	risk.boot[,6]=="NaN"|risk.boot[,7]=="NaN"|risk.boot[,8]=="NaN")
+      ind<- which(risk.boot[,1]=="NaN"|risk.boot[,2]=="NaN"|risk.boot[,3]=="NaN"|risk.boot[,4]=="NaN"|risk.boot[,5]=="NaN"|	risk.boot[,6]=="NaN"|risk.boot[,7]=="NaN"|risk.boot[,8]=="NaN")
       if(length(ind)>0){
-        risk.boot<-risk.boot[-ind,]}
+        risk.boot<- risk.boot[-ind,]}
     }
     if(any(risk.boot<0)){
-      ind<-which(risk.boot[,2]<0|risk.boot[,4]<0|risk.boot[,6]<0|risk.boot[,8]<0)
+      ind<- which(risk.boot[,2]<0|risk.boot[,4]<0|risk.boot[,6]<0|risk.boot[,8]<0)
       if(length(ind)>0){
-        risk.boot<-risk.boot[-ind,]}
+        risk.boot<- risk.boot[-ind,]}
     }
     #print("dim of risk.boot=")
     #print(dim(risk.boot))
     if(dim(risk.boot)[1]>nb){break}
   }
-  risk.boot<-risk.boot[1:nb,]
+  risk.boot<- risk.boot[1:nb,]
   total<- dim(risk.boot)[1]
   b.RD1<- c(quantile(risk.boot[,1], probs=c(0.025, 0.975),na.rm=T))
   b.RD2<- c(quantile(risk.boot[,3], probs=c(0.025, 0.975),na.rm=T))
@@ -83,16 +83,16 @@ PSEa_wiboot_c=function(data_boot, Para, n.para, n.cate, ITE, theta.hat, sig.hat,
   ####################################################
 
   #if(intv==4){
-  w0000 <- rep(intval[1],4)
-  w1000 <- c(intval[2],rep(intval[1],3))
-  w1100 <- c(rep(intval[2],2),rep(intval[1],2))
-  w1110 <- c(rep(intval[2],3),intval[1])
-  w1111 <- rep(intval[2],4)
-  p0000<- rho(theta.hat,sig.hat,n.para,Name=c("W","Q","S"),n.cate1,a,w0000,confounders)
-  p1000<- rho(theta.hat,sig.hat,n.para,Name=c("W","Q","S"),n.cate1,a,w1000,confounders)
-  p1100<- rho(theta.hat,sig.hat,n.para,Name=c("W","Q","S"),n.cate1,a,w1100,confounders)
-  p1110<- rho(theta.hat,sig.hat,n.para,Name=c("W","Q","S"),n.cate1,a,w1110,confounders)
-  p1111<- rho(theta.hat,sig.hat,n.para,Name=c("W","Q","S"),n.cate1,a,w1111,confounders)
+  w0000<- rep(intval[1],4)
+  w1000<- c(intval[2],rep(intval[1],3))
+  w1100<- c(rep(intval[2],2),rep(intval[1],2))
+  w1110<- c(rep(intval[2],3),intval[1])
+  w1111<- rep(intval[2],4)
+  p0000<- rho(theta.hat,sig.hat,Name=c("W","Q","S"),n_cate1,a,w0000,confounders)
+  p1000<- rho(theta.hat,sig.hat,Name=c("W","Q","S"),n_cate1,a,w1000,confounders)
+  p1100<- rho(theta.hat,sig.hat,Name=c("W","Q","S"),n_cate1,a,w1100,confounders)
+  p1110<- rho(theta.hat,sig.hat,Name=c("W","Q","S"),n_cate1,a,w1110,confounders)
+  p1111<- rho(theta.hat,sig.hat,Name=c("W","Q","S"),n_cate1,a,w1111,confounders)
 
   rho_values<- c(p0000[1],p1000[1],p1100[1],p1110[1],p1111[1],rd.TEa,rr.TEa)
   names(rho_values)<- c("p0000","p1000","p1100","p1110","p1111","total RD","total RR")
