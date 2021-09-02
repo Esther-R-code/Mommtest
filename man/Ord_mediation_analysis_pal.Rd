@@ -12,7 +12,7 @@ Ord_mediation_analysis_pal(
   intv = 4,
   intval = c(0, 1),
   nb = 0,
-  n_core
+  n_core = 1
 )
 }
 \arguments{
@@ -28,8 +28,36 @@ Ord_mediation_analysis_pal(
 
 \item{nb:}{Number of bootstrapping. Default is 0 (i.e. no bootstrapping applied).}
 
-\item{n_core:}{number of cores that will be used}
+\item{n_core:}{number of cores that will be used in parallel computing. default=1}
 }
 \description{
 Apply mediation analysis for non-rare orinal/multinomial outcome with two gaussian mediators
+}
+\examples{
+library(ordinal)
+library(parallel)
+#simluate a data set
+sample_size<- 500
+exp_cont<- c(0,1)
+med_cont<- c(0.23,0.23)
+n_cate<- 3
+deltaq<- c(0.1,0.5) #Q c(d0,dw)
+alphas<- c(0.2,0.5,0.5) #S c(al0,alw,alq)
+betay1<- c(-1.8, 1.0, 1.2, 1.3, 0.05) #c(b01,bw1,bq1,bs1,bc1)
+betay2<- c(0.8, 0.8, 1.1, 1.2, 0.03) #c(b02,bw2,bq2,bs2,bc2)
+betay<- rbind(betay1,betay2)
+coa<- c(0,0.4)
+j<- 56 #sample(1,1:1e+09)
+sim_data<- sim_medi_cate_data(sample_size=sample_size, exp_cont=exp_cont, med_cont=med_cont, n_cate=n_cate, deltaq=deltaq, alphas=alphas, betay=betay, coa=coa,j)
+#seeting of mutiple mediation analysis
+confounders<- median(sim_data[,5])
+intv<- 4
+intval<- c(0, 1)
+nb<- 0
+n_core<- 2
+result<- Ord_mediation_analysis_pal(Indata=sim_data, n_cate, confounders, intv, intval, nb, n_core)
+
+#if want to calculate the confidence interval by using bootstrapping
+nb<- 50
+result_boot<- Ord_mediation_analysis_pal(Indata=sim_data, n_cate, confounders, intv, intval, nb, n_core)
 }

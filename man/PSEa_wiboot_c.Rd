@@ -7,8 +7,8 @@
 PSEa_wiboot_c(
   data_boot,
   Para,
-  n.para,
-  n.cate,
+  n_para,
+  n_cate,
   ITE,
   theta.hat,
   sig.hat,
@@ -18,11 +18,17 @@ PSEa_wiboot_c(
   confounders,
   a,
   nb,
-  n.core
+  n_core
 )
 }
 \arguments{
+\item{data_boot}{the data set}
+
 \item{Para}{the parameter that will trated as nominal variables. Seeting as "~W+Q+S". The detail please see the R function 'clm'}
+
+\item{n_para}{the number of pararmeters that used in the model of outcome}
+
+\item{n_cate}{the number of categories of the outcome}
 
 \item{ITE}{the total effect}
 
@@ -40,15 +46,9 @@ PSEa_wiboot_c(
 
 \item{a}{the value of outcome}
 
-\item{data.boot}{the data set}
-
-\item{n_para}{the number of pararmeters that used in the model of outcome}
-
-\item{n.cata}{the number of categories of the outcome}
-
 \item{nb:}{number of bootstrapping}
 
-\item{n.core:}{number of cores that will be used}
+\item{n_core:}{number of cores that will be used}
 }
 \description{
 PSE with bootstrap

@@ -16,8 +16,7 @@ PSEa_woboot(
   intv,
   intval,
   confounders,
-  a,
-  n_core
+  a
 )
 }
 \arguments{
@@ -44,8 +43,6 @@ PSEa_woboot(
 \item{a}{the value of outcome}
 
 \item{data.boot}{the data set}
-
-\item{n_core:}{number of cores that will be used}
 }
 \description{
 PSE without bootstrap

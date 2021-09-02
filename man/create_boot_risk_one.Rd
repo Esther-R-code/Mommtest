@@ -5,29 +5,29 @@
 \title{the risk create by bootstrapping}
 \usage{
 create_boot_risk_one(
-  data.boot,
+  data_boot,
   confounders = c(),
   Para,
-  n.cate,
+  n_cate,
   a,
   intv = 4,
   intval = c(0, 1)
 )
 }
 \arguments{
-\item{data.boot}{the data set}
+\item{data_boot}{the data set}
 
 \item{confounders}{the values of confounders, def:c()}
 
 \item{Para}{the parameter that will trated as nominal variables. Seeting as "~W+Q+S". The detail please see the R function 'clm'}
+
+\item{n_cate}{the number of categories of the outcome}
 
 \item{a}{the value of outcome}
 
 \item{intv}{number of interventions. Default is 4.}
 
 \item{intval}{the values of exposure used for intervention. Default is c(0,1).}
-
-\item{n.cata}{the number of categories of the outcome}
 }
 \description{
 the risk create by bootstrapping

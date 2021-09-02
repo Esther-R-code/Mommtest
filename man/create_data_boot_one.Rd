@@ -4,10 +4,10 @@
 \alias{create_data_boot_one}
 \title{create one bootsraping data}
 \usage{
-create_data_boot_one(boot.count, Indata)
+create_data_boot_one(boot_count, Indata)
 }
 \arguments{
-\item{boot.count}{the count number of bootstrapping}
+\item{boot_count}{the count number of bootstrapping}
 
 \item{Indata}{the data that you used}
 }
