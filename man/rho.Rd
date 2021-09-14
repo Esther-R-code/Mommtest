@@ -18,13 +18,18 @@ rho(TH, SH, Name = c("W", "Q", "S"), n_cate1, a, w, confounders = NULL)
 \item{w}{the values of intervention}
 
 \item{confounders}{the values of confounders, def:NULL}
+
+\item{n_cate1:}{the number of categories of the outcome minus 1}
+}
+\value{
+the probability of the counterfactual outcome
 }
 \description{
 the probability of the counterfactual outcome of the outcome
 }
 \details{
-This function allows you to calculate the probability of the counterfactual outcome of the outcome.
-before use this function, plase makesure the R packages "ordinal" and "parallel" have been install and library.
+This function allows you to calculate the probability of the counterfactual outcome when assume outcome=a and intervention=w.
+Before using this function, please make sure the R packages "ordinal" and "parallel" have been install and libraries.
 }
 \examples{
 deltaq<-c(0.1,0.5) #Q c(d0,dw)

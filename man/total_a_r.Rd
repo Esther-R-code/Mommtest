@@ -16,5 +16,5 @@ total_a_r(TEa, TEa1, intval = c(0, 1), confounders)
 \item{confounders}{values of Confounders}
 }
 \description{
-total_a_r the risk of total effet undera the value of outcome is a
+total_a_r the risk of total effet when the value of outcome is a
 }

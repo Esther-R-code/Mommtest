@@ -15,7 +15,7 @@ PSEa_wiboot_c(
   Vcov.matrix,
   intv,
   intval,
-  confounders,
+  confounders = c(),
   a,
   nb,
   n_core
@@ -42,13 +42,46 @@ PSEa_wiboot_c(
 
 \item{intval}{the values of exposure used for intervention. Default is c(0,1)}
 
-\item{confounders}{the values of confounders, def:c()}
+\item{confounders}{the values of confounders, Default=c()}
 
 \item{a}{the value of outcome}
 
-\item{nb:}{number of bootstrapping}
+\item{nb:}{number of bootstrapping; Default=0}
 
 \item{n_core:}{number of cores that will be used}
+}
+\value{
+p0000: the probability of the counterfactual outcome of the outcome under the intervention=(0,0,0,0)
+
+p1000: the probability of the counterfactual outcome of the outcome under the intervention=(1,0,0,0)
+
+p1100: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,0,0)
+
+p1110: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,1,0)
+
+p1111: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,1,1)
+
+total RD: the total effect under the risk difference scale
+
+total RR: the total effect under the risk ratio scale
+
+RD W>Y: the PSE of path from W to Y under the risk difference scale
+
+lower(RDWY): the lower bound of the confidence interval the PSE of path from W to Y under the risk difference scale
+
+upper(RDWY): the upper bound of the confidence interval the PSE of path from W to Y under the risk difference scale
+
+pv(RDWY): the p-value of the PSE of path from W to Y under the risk difference scale
+
+RR W>Y: the PSE of path from W to Y under the risk ratio scale
+
+lower(RRWY): the lower bound of the confidence interval the PSE of path from W to Y under the risk ratio scale
+
+upper(RRWY): the upper bound of the confidence interval the PSE of path from W to Y under the risk ratio scale
+
+pv(RRWY): the p-value of the PSE of path from W to Y under the risk ratio scale
+
+other return values with the similar names are for the path from W through Q to Y  or through  S, or through both
 }
 \description{
 PSE with bootstrap
