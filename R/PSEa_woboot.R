@@ -12,6 +12,22 @@
 #' @param confounders the values of confounders, def:c()
 #' @param a the value of outcome
 #' @export PSEa_woboot
+#' @return p0000: the probability of the counterfactual outcome of the outcome under the intervention=(0,0,0,0)
+#' @return p1000: the probability of the counterfactual outcome of the outcome under the intervention=(1,0,0,0)
+#' @return p1100: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,0,0)
+#' @return p1110: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,1,0)
+#' @return p1111: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,1,1)
+#' @return total RD: the total effect under the risk difference scale
+#' @return total RR: the total effect under the risk ratio scale
+#' @return RD W>Y: the PSE of path from W to Y under the risk difference scale
+#' @return lower(RDWY): the lower bound of the confidence interval the PSE of path from W to Y under the risk difference scale
+#' @return upper(RDWY): the upper bound of the confidence interval the PSE of path from W to Y under the risk difference scale
+#' @return pv(RDWY): the p-value of the PSE of path from W to Y under the risk difference scale
+#' @return RR W>Y: the PSE of path from W to Y under the risk ratio scale
+#' @return lower(RRWY): the lower bound of the confidence interval the PSE of path from W to Y under the risk ratio scale
+#' @return upper(RRWY): the upper bound of the confidence interval the PSE of path from W to Y under the risk ratio scale
+#' @return pv(RRWY): the p-value of the PSE of path from W to Y under the risk ratio scale
+#' @return other return values with the similar names are for the path from W through Q to Y  or through  S, or through both
 
 PSEa_woboot=function(data_boot, Para, n_para, n_cate, ITE, theta.hat, sig.hat, Vcov.matrix, intv, intval, confounders, a){
   n_cate1=n_cate-1
@@ -53,7 +69,11 @@ PSEa_woboot=function(data_boot, Para, n_para, n_cate, ITE, theta.hat, sig.hat, V
   RR4<- rr_ord(p1111,p1110,Vcov.matrix)
 
   pse_values<- c(RD1,RR1,RD2,RR2,RD3,RR3,RD4,RR4)
-  names(pse_values)<- c("RD W>Y",bdnp,"RR W>Y",bdnp,"RD W>S>Y",bdnp,"RR W>S>Y",bdnp,"RD W>Q>Y",bdnp,"RR W>Q>Y",bdnp,"RD W>Q>S>Y",bdnp,"RR W>Q>S>Y",bdnp)
+  pse_name1<- c("RD W>Y","lower(RDWY)","upper(RDWY)","pv(RDWY)","RR W>Y","lower(RRWY)","upper(RRWY)","pv(RRWY)")
+  pse_name2<- c("RD W>S>Y","lower(RDWSY)","upper(RDWSY)","pv(RDWSY)","RR W>S>Y","lower(RRWSY)","upper(RRWSY)","pv(RRWSY)")
+  pse_name3<- c("RD W>Q>Y","lower(RDWQY)","upper(RDWQY)","pv(RDWQY)","RR W>Q>Y","lower(RRWQY)","upper(RRWQY)","pv(RRWQY)")
+  pse_name4<- c("RD W>Q>S>Y","lower(RDWQSY)","upper(RDWQSY)","pv(RDWQSY)","RR W>Q>S>Y","lower(RRWQSY)","upper(RRWQSY)","pv(RRWQSY)")
+  names(pse_values)<- c(pse_name1, pse_name2, pse_name3, pse_name4)
   ######################################################################
   return(c(rho_values,pse_values))
 }

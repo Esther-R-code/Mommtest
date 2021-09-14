@@ -1,16 +1,18 @@
 #' the probability of the counterfactual outcome of the outcome
 #'
-#' This function allows you to calculate the probability of the counterfactual outcome of the outcome.
+#' This function allows you to calculate the probability of the counterfactual outcome when assume outcome=a and intervention=w.
 #' Before using this function, please make sure the R packages "ordinal" and "parallel" have been install and libraries.
 #' @title rho
 #' @param TH theta; all of the parameters of the model #list(beta.hat, alpha.hat, delta.hat)
 #' @param SH sigma: all of the estimates of the variance of the mediators
 #' @param Name names of exposure and mediators, def:c("W","Q","S")
+#' @param n_cate1: the number of categories of the outcome minus 1
 #' @param a the value of outcome
 #' @param w the values of intervention
 #' @param confounders the values of confounders, def:NULL
 #' @export rho
 #' @keywords counterfactual
+#' @return the probability of the counterfactual outcome
 #' @examples
 #' deltaq<-c(0.1,0.5) #Q c(d0,dw)
 #' alphas<-c(0.2,0.5,0.5) #S c(al0,alw,alq)

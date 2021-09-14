@@ -1,7 +1,6 @@
-#' Apply mediation analysis for non-rare orinal/multinomial outcome with two gaussian mediators
-#' @title Ord_mediation_analysis
-#' multinomial outcome mediation analysis with two ordered mediators.
+#' Apply mediation analysis for non-rare orinal/multinomial outcome with two gaussian mediators.
 #' Before using this function, please make sure the R packages "ordinal" and "parallel" have been install and libraries.
+#' @title Ord_mediation_analysis
 #' @param Indata: Input data with outcome, exposure, mediators, and covariates as columns. The number of rows equals to the number of people in the data you used.
 #' @param n_cate: the number of categories of the outcome
 #' @param confounders: the values of confounder
@@ -38,7 +37,26 @@
 #' nb<- 50
 #' result_boot<- Ord_mediation_analysis_pal(Indata=sim_data, n_cate, confounders, intv, intval, nb, n_core)
 
+#' @return PSE: a table with the following values in the row; columns store the values for different categories of the outcome
+#' @return p0000: the probability of the counterfactual outcome of the outcome under the intervention=(0,0,0,0)
+#' @return p1000: the probability of the counterfactual outcome of the outcome under the intervention=(1,0,0,0)
+#' @return p1100: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,0,0)
+#' @return p1110: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,1,0)
+#' @return p1111: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,1,1)
+#' @return total RD: the total effect under the risk difference scale
+#' @return total RR: the total effect under the risk ratio scale
+#' @return RD W>Y: the PSE of path from W to Y under the risk difference scale
+#' @return lower(RDWY): the lower bound of the confidence interval the PSE of path from W to Y under the risk difference scale
+#' @return upper(RDWY): the upper bound of the confidence interval the PSE of path from W to Y under the risk difference scale
+#' @return pv(RDWY): the p-value of the PSE of path from W to Y under the risk difference scale
+#' @return RR W>Y: the PSE of path from W to Y under the risk ratio scale
+#' @return lower(RRWY): the lower bound of the confidence interval the PSE of path from W to Y under the risk ratio scale
+#' @return upper(RRWY): the upper bound of the confidence interval the PSE of path from W to Y under the risk ratio scale
+#' @return pv(RRWY): the p-value of the PSE of path from W to Y under the risk ratio scale
+#' @return Note: other return values with the similar names are for the path from W through Q to Y  or through  S, or through both
 Ord_mediation_analysis_pal=function(Indata, n_cate, confounders, intv=4, intval=c(0,1), nb=0, n_core=1){
+  library(ordinal)
+  library(parallel)
   colnames(Indata)[1:4]<-c("Y","W","Q","S")
   if(n_cate!=length(names(summary(Indata$Y)))){stop("please make sure 'n_cate' is equal to the number of categories of the outcome!")}
   n_cate1<-n_cate-1
@@ -83,7 +101,6 @@ Ord_mediation_analysis_pal=function(Indata, n_cate, confounders, intv=4, intval=
     databoot<- mclapply(1:nb_r, "create_data_boot_one", Indata=Indata, mc.cores=n_core, mc.cleanup = TRUE)
   }
 
-  ####fixed###########################################
   if(nb>0){
     for(cate.count in 1:(n_cate)){
       # for each Y=a=cate.count calculate the PSEs
@@ -98,7 +115,7 @@ Ord_mediation_analysis_pal=function(Indata, n_cate, confounders, intv=4, intval=
   	coln_PSE<-c(coln_PSE,paste0("Outcome=",cate.count))#;print(coln_PSE)
   	}
   }
-  ####fixed###################################
+
   colnames(PSE)<-coln_PSE
   return(PSE)
 }

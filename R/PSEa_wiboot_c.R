@@ -9,14 +9,31 @@
 #' @param Vcov.matrix the variance-covariance matrix of theta
 #' @param intv number of interventions. Default is 4.
 #' @param intval the values of exposure used for intervention. Default is c(0,1)
-#' @param confounders the values of confounders, def:c()
+#' @param confounders the values of confounders, Default=c()
 #' @param a the value of outcome
-#' @param nb: number of bootstrapping
+#' @param nb: number of bootstrapping; Default=0
 #' @param n_core: number of cores that will be used
 #'
 #' @export PSEa_wiboot_c
 #'
-PSEa_wiboot_c=function(data_boot, Para, n_para, n_cate, ITE, theta.hat, sig.hat, Vcov.matrix, intv, intval, confounders, a, nb, n_core){
+#' @return p0000: the probability of the counterfactual outcome of the outcome under the intervention=(0,0,0,0)
+#' @return p1000: the probability of the counterfactual outcome of the outcome under the intervention=(1,0,0,0)
+#' @return p1100: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,0,0)
+#' @return p1110: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,1,0)
+#' @return p1111: the probability of the counterfactual outcome of the outcome under the intervention=(1,1,1,1)
+#' @return total RD: the total effect under the risk difference scale
+#' @return total RR: the total effect under the risk ratio scale
+#' @return RD W>Y: the PSE of path from W to Y under the risk difference scale
+#' @return lower(RDWY): the lower bound of the confidence interval the PSE of path from W to Y under the risk difference scale
+#' @return upper(RDWY): the upper bound of the confidence interval the PSE of path from W to Y under the risk difference scale
+#' @return pv(RDWY): the p-value of the PSE of path from W to Y under the risk difference scale
+#' @return RR W>Y: the PSE of path from W to Y under the risk ratio scale
+#' @return lower(RRWY): the lower bound of the confidence interval the PSE of path from W to Y under the risk ratio scale
+#' @return upper(RRWY): the upper bound of the confidence interval the PSE of path from W to Y under the risk ratio scale
+#' @return pv(RRWY): the p-value of the PSE of path from W to Y under the risk ratio scale
+#' @return other return values with the similar names are for the path from W through Q to Y  or through  S, or through both
+#'
+PSEa_wiboot_c=function(data_boot, Para, n_para, n_cate, ITE, theta.hat, sig.hat, Vcov.matrix, intv, intval, confounders=c(), a, nb, n_core){
   n_cate1=n_cate-1
   TEa<-NULL
   TEa1<-NULL

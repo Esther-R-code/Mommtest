@@ -1,4 +1,4 @@
-#' total_a_r the risk of total effet undera the value of outcome is a
+#' total_a_r the risk of total effet when the value of outcome is a
 #' @title total_a_r
 #' @param TEa total effect under outcome=a
 #' @param TEa1 total effect under outcome=a-1
